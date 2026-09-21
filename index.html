@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard SIPANTAS Narkoba Polri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EAF0EF; --surface:#FFFFFF; --ink:#10252F; --muted:#5B6D74; --line:#D3DCDB;
+  --teal:#0E7C7B; --teal-soft:#CFE5E3; --sea:#DCE8EA; --grat:#C3D4D6;
+  --low:#5E9670; --mid:#C98F1E; --high:#B3412E; --gold:#A8842C;
+  --display:'Archivo','Arial Narrow',Arial,sans-serif;
+  --body:'Public Sans','Segoe UI',Roboto,Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C191E; --surface:#13252B; --ink:#E2EBEA; --muted:#93A7AB; --line:#263C42;
+    --teal:#40B3AD; --teal-soft:#1D3E40; --sea:#0F242A; --grat:#1E373D;
+    --low:#6FB083; --mid:#E0A73A; --high:#E0654F; --gold:#CDA84A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C191E; --surface:#13252B; --ink:#E2EBEA; --muted:#93A7AB; --line:#263C42;
+  --teal:#40B3AD; --teal-soft:#1D3E40; --sea:#0F242A; --grat:#1E373D;
+  --low:#6FB083; --mid:#E0A73A; --high:#E0654F; --gold:#CDA84A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 28px 40px}
+h1,h2,h3{font-family:var(--display);margin:0;font-stretch:88%}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;gap:20px 32px;align-items:flex-end;justify-content:space-between;padding-bottom:22px;border-bottom:2px solid var(--ink)}
+.brand{display:flex;gap:16px;align-items:center;max-width:720px}
+.seal{flex:none;width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--gold);font-size:15px;font-stretch:75%}
+.brand h1{font-size:34px;font-weight:800;line-height:1.05;letter-spacing:-.01em}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.field select{min-width:190px;padding:8px 10px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-size:14px}
+.btn{padding:8px 12px;border:1px solid var(--line);background:var(--surface);border-radius:6px;cursor:pointer;font-size:14px}
+.btn:hover{border-color:var(--teal)}
+.sim{margin-top:14px;font-size:13px;color:var(--muted)}
+.sim b{color:var(--ink);font-weight:600}
+
+/* KPI band */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:22px 0}
+.kpi{padding:18px 20px 16px;border-left:1px solid var(--line)}
+.kpi:first-child{border-left:0}
+.kpi .v{font-family:var(--display);font-weight:800;font-size:38px;line-height:1;font-stretch:80%;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:13px;color:var(--muted);margin-top:6px}
+.kpi .s{font-size:13px;margin-top:8px}
+.meter{height:5px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--teal)}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 22px;min-width:0}
+.panel h2{font-size:21px;font-weight:700}
+.panel .sub{color:var(--muted);font-size:13.5px;margin:2px 0 14px}
+.span-8{grid-column:span 8}.span-4{grid-column:span 4}.span-7{grid-column:span 7}.span-5{grid-column:span 5}.span-12{grid-column:span 12}
+
+/* map */
+.map-panel{padding:20px 22px 14px}
+.map{width:100%;height:auto;display:block;background:var(--sea);border-radius:8px}
+.map .grat{stroke:var(--grat);stroke-width:1}
+.map .grat-t{fill:var(--muted);font-size:10px;font-family:var(--body)}
+.map .lane{stroke:var(--muted);stroke-opacity:.45;stroke-width:1.2;stroke-dasharray:3 4;fill:none}
+.map .node{cursor:pointer}
+.map .node circle.dot{stroke:var(--surface);stroke-width:2.5}
+.map .node .ring{fill:none;stroke:var(--ink);stroke-width:2;opacity:0}
+.map .node.sel .ring{opacity:1}
+.map .node text{font-family:var(--display);font-stretch:85%;font-weight:700;font-size:13px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:4px}
+.map .node text.pct{font-family:var(--body);font-weight:600;font-size:10.5px;fill:var(--muted)}
+.map .node:focus{outline:none}
+.map .node:focus-visible .ring{opacity:1;stroke:var(--teal)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:50%;display:inline-block}
+
+/* rank list */
+.rank{list-style:none;margin:0;padding:0}
+.rank li{border-top:1px solid var(--line)}
+.rank li:first-child{border-top:0}
+.rank button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;gap:2px 10px;width:100%;padding:10px 6px;cursor:pointer;border-radius:6px}
+.rank button:hover{background:var(--paper)}
+.rank button:focus-visible{outline:2px solid var(--teal)}
+.rank li.sel button{background:var(--teal-soft)}
+.rank .nm{font-weight:600;font-size:14.5px}
+.rank .tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;align-self:center}
+.rank .meta{grid-column:1 / -1;font-size:12.5px;color:var(--muted)}
+.t-Rendah{background:var(--low)}.t-Sedang{background:var(--mid)}.t-Tinggi{background:var(--high)}
+
+/* trend */
+.chart{width:100%;height:auto;display:block}
+.chart .ax{fill:var(--muted);font-size:11px;font-family:var(--body)}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.key{display:flex;gap:18px;font-size:12.5px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+.key span{display:inline-flex;gap:6px;align-items:center}
+.key i{width:14px;height:8px;border-radius:2px;display:inline-block}
+
+/* funnel */
+.funnel{display:flex;flex-direction:column;gap:8px}
+.fstep{display:grid;grid-template-columns:150px 1fr 54px;gap:10px;align-items:center;font-size:13.5px}
+.fbar{height:22px;background:var(--paper);border-radius:4px;overflow:hidden}
+.fbar i{display:block;height:100%;background:var(--teal);border-radius:4px;min-width:2px}
+.fstep .n{text-align:right;font-family:var(--display);font-weight:700;font-size:17px;font-stretch:80%;font-variant-numeric:tabular-nums}
+.zat{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.zat h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.zrow{display:grid;grid-template-columns:120px 1fr 32px;gap:10px;align-items:center;font-size:13px;margin:5px 0}
+.zrow .fbar{height:10px}
+.zrow .fbar i{background:var(--gold)}
+.zrow b{text-align:right;font-variant-numeric:tabular-nums}
+
+/* table */
+.tbl-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tbl-wrap{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:720px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface);font-weight:600;color:var(--muted);font-size:12.5px;z-index:1}
+td.code{font-variant-numeric:tabular-nums;font-weight:600}
+.stage{display:inline-flex;gap:3px;vertical-align:middle;margin-right:8px}
+.stage i{width:14px;height:5px;border-radius:2px;background:var(--line)}
+.stage i.on{background:var(--teal)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* partners */
+.partners{list-style:none;margin:0;padding:0}
+.partners li{padding:12px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:2px 12px}
+.partners li:first-child{border-top:0;padding-top:0}
+.partners .pn{font-weight:600}
+.partners .pr{font-size:13px;color:var(--muted);grid-column:1}
+.partners .pc{grid-row:1 / span 2;grid-column:2;text-align:right;align-self:center}
+.partners .pc b{display:block;font-family:var(--display);font-size:24px;font-weight:800;font-stretch:80%;line-height:1}
+.partners .pc small{font-size:11.5px;color:var(--muted)}
+.status{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:20px;border:1px solid var(--teal);color:var(--teal);margin-left:6px;vertical-align:1px}
+
+footer{margin-top:26px;font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media (max-width:1080px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpi:nth-child(4){border-left:0}
+  .kpi:nth-child(n+4){border-top:1px solid var(--line)}
+  .span-8,.span-4,.span-7,.span-5{grid-column:span 12}
+}
+@media (max-width:640px){
+  .wrap{padding:18px 14px 30px}
+  .brand h1{font-size:26px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi{border-left:1px solid var(--line)!important;border-top:1px solid var(--line)}
+  .kpi:nth-child(odd){border-left:0!important}
+  .kpi:nth-child(-n+2){border-top:0}
+  .kpi .v{font-size:30px}
+  .fstep{grid-template-columns:118px 1fr 44px}
+  .field select{min-width:150px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fbar i,.meter i{transition:width .45s ease}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="brand">
+        <div class="seal" aria-hidden="true">SPN</div>
+        <div>
+          <h1>SIPANTAS Narkoba Polri</h1>
+          <p>Kolaborasi Sistem Pemeriksaan Anti Narkotika Terintegrasi, Akuntabel dan Standar &middot; Biddokkes Polda Kepulauan Riau</p>
+        </div>
+      </div>
+      <div class="sim"><b>Purwarupa papan data.</b> Seluruh angka adalah data simulasi; identitas personel disamarkan dengan kode kasus.</div>
+    </div>
+    <div class="controls">
+      <label class="field">Periode
+        <select id="fPeriod"></select>
+      </label>
+      <label class="field">Satuan kerja
+        <select id="fSatker"></select>
+      </label>
+      <button class="btn" id="reset" type="button">Tampilkan semua</button>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis" aria-label="Ringkasan pemeriksaan"></section>
+
+  <div class="grid">
+    <section class="panel map-panel span-8" aria-labelledby="hMap">
+      <h2 id="hMap">Peta risiko jajaran</h2>
+      <p class="sub">Peta skematis, posisi tidak berskala. Ukuran lingkaran menunjukkan jumlah personel; warna menunjukkan tingkat risiko. Pilih satuan kerja untuk menyaring seluruh papan.</p>
+      <svg class="map" id="map" viewBox="0 0 640 420" role="group" aria-label="Peta satuan kerja Polda Kepulauan Riau"></svg>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--low)"></i>Risiko rendah</span>
+        <span><i class="sw" style="background:var(--mid)"></i>Risiko sedang</span>
+        <span><i class="sw" style="background:var(--high)"></i>Risiko tinggi</span>
+        <span>Angka di bawah nama: cakupan pemeriksaan</span>
+      </div>
+    </section>
+
+    <section class="panel span-4" aria-labelledby="hRank">
+      <h2 id="hRank">Urutan risiko satuan kerja</h2>
+      <p class="sub">Indeks gabungan kasus terkonfirmasi per 1.000 personel diperiksa (70%) dan kekurangan cakupan (30%).</p>
+      <ul class="rank" id="rank"></ul>
+    </section>
+
+    <section class="panel span-7" aria-labelledby="hTrend">
+      <h2 id="hTrend">Tren pemeriksaan bulanan</h2>
+      <p class="sub" id="trendSub"></p>
+      <svg class="chart" id="trend" viewBox="0 0 640 260" role="img" aria-label="Grafik tren pemeriksaan"></svg>
+      <div class="key">
+        <span><i style="background:var(--teal-soft);border:1px solid var(--teal)"></i>Personel diperiksa</span>
+        <span><i style="background:var(--high)"></i>Terkonfirmasi laboratorium</span>
+      </div>
+    </section>
+
+    <section class="panel span-5" aria-labelledby="hFunnel">
+      <h2 id="hFunnel">Alur tindak lanjut</h2>
+      <p class="sub">Dari skrining hingga penyelesaian tindak lanjut bersama mitra.</p>
+      <div class="funnel" id="funnel"></div>
+      <div class="zat">
+        <h3>Jenis zat terkonfirmasi</h3>
+        <div id="zat"></div>
+      </div>
+    </section>
+
+    <section class="panel span-8" aria-labelledby="hCases">
+      <h2 id="hCases">Register tindak lanjut</h2>
+      <p class="sub">Kasus terkonfirmasi laboratorium beserta tahap penanganannya. Identitas personel hanya dapat dibuka oleh pejabat berwenang.</p>
+      <div class="tbl-tools" id="chips" role="group" aria-label="Saring menurut tahap"></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Kode kasus</th><th>Satuan kerja</th><th>Bulan</th><th>Zat</th><th>Tahap</th><th>Mitra penanganan</th></tr></thead>
+          <tbody id="cases"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel span-4" aria-labelledby="hPartner">
+      <h2 id="hPartner">Kolaborasi mitra</h2>
+      <p class="sub">Rujukan yang ditangani mitra pada periode terpilih.</p>
+      <ul class="partners" id="partners"></ul>
+    </section>
+  </div>
+
+  <footer>
+    <span>Papan data SIPANTAS Narkoba Polri &middot; tahap purwarupa (minimum viable product)</span>
+    <span>Data simulasi April&ndash;September 2026</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ---------- deterministic pseudo-random ----------
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+  var rnd = mulberry32(20260921);
+
+  var MONTHS = ['April','Mei','Juni','Juli','Agustus','September'];
+  var MSHORT = ['Apr','Mei','Jun','Jul','Agu','Sep'];
+
+  // satker: posisi skematis (bukan skala peta), personel, rasio non-negatif skrining, cakupan semester
+  var SATKER = [
+    {id:'mapolda',  nm:'Satker Mapolda Kepri',        sh:'Mapolda',       x:150,y:258, lx:22, ly:5,  a:'start', p:1450, rate:.008, cov:.95},
+    {id:'barelang', nm:'Polresta Barelang',           sh:'Barelang',      x:108,y:308, lx:-22,ly:5,  a:'end',   p:1650, rate:.020, cov:.82},
+    {id:'brimob',   nm:'Satbrimob Polda Kepri',       sh:'Brimob',        x:92, y:222, lx:-20,ly:5,  a:'end',   p:620,  rate:.006, cov:.97},
+    {id:'polairud', nm:'Ditpolairud Polda Kepri',     sh:'Polairud',      x:196,y:212, lx:20, ly:5,  a:'start', p:380,  rate:.012, cov:.88},
+    {id:'tpi',      nm:'Polresta Tanjungpinang',      sh:'Tanjungpinang', x:252,y:322, lx:20, ly:5,  a:'start', p:720,  rate:.014, cov:.90},
+    {id:'bintan',   nm:'Polres Bintan',               sh:'Bintan',        x:282,y:262, lx:20, ly:5,  a:'start', p:540,  rate:.009, cov:.86},
+    {id:'karimun',  nm:'Polres Karimun',              sh:'Karimun',       x:44, y:356, lx:0,  ly:32, a:'middle',p:560,  rate:.017, cov:.78},
+    {id:'lingga',   nm:'Polres Lingga',               sh:'Lingga',        x:214,y:392, lx:20, ly:5,  a:'start', p:380,  rate:.005, cov:.74},
+    {id:'anambas',  nm:'Polres Kepulauan Anambas',    sh:'Anambas',       x:404,y:150, lx:20, ly:5,  a:'start', p:300,  rate:.010, cov:.72},
+    {id:'natuna',   nm:'Polres Natuna',               sh:'Natuna',        x:560,y:74,  lx:20, ly:5,  a:'start', p:420,  rate:.007, cov:.70}
+  ];
+  var BYID = {}; SATKER.forEach(function(s){BYID[s.id]=s;});
+
+  var ZAT = [['Metamfetamin',.45],['Ganja (THC)',.30],['Amfetamin',.15],['Benzodiazepin',.10]];
+  var STAGES = ['Konfirmasi lab','Asesmen terpadu','Tindak lanjut','Selesai dipantau'];
+
+  function pickZat(){var r=rnd(),c=0;for(var i=0;i<ZAT.length;i++){c+=ZAT[i][1];if(r<c)return ZAT[i][0];}return ZAT[0][0];}
+
+  // ---------- generate monthly data & cases ----------
+  var DATA = {}; // DATA[satker][m] = {exam, nonneg}
+  var CASES = [];
+  var seq = 101;
+  SATKER.forEach(function(s){
+    DATA[s.id] = [];
+    // distribusi pemeriksaan per bulan, total = p * cov
+    var w = MONTHS.map(function(){return .7 + rnd()*.6;});
+    var ws = w.reduce(function(a,b){return a+b;},0);
+    MONTHS.forEach(function(_,m){
+      var exam = Math.round(s.p*s.cov*w[m]/ws);
+      var nonneg = Math.max(0, Math.round(exam*s.rate + (rnd()-.5)*2));
+      var conf = Math.min(nonneg, Math.max(0, Math.round(nonneg*.55 + (rnd()-.5))));
+      DATA[s.id][m] = {exam:exam, nonneg:nonneg};
+      for(var k=0;k<conf;k++){
+        var age = 5-m;
+        var stage = Math.min(3, Math.floor(age*.75 + rnd()*1.6));
+        var route = rnd()<.6 ? 'rehab' : 'propam';
+        var mitra;
+        if(stage===0) mitra='RS Bhayangkara Polda Kepri';
+        else if(stage===1) mitra='BNNP Kepulauan Riau';
+        else mitra = route==='rehab' ? 'BNNP Kepri / RS rujukan (rehabilitasi)' : 'Bidpropam Polda Kepri';
+        CASES.push({code:'SPT-26-'+String(seq++).padStart(4,'0'), s:s.id, m:m, zat:pickZat(), stage:stage, route:route, mitra:mitra});
+      }
+    });
+  });
+  CASES.sort(function(a,b){return b.m-a.m || a.code.localeCompare(b.code);});
+
+  // ---------- state ----------
+  var state = {period:'all', satker:'all', stage:'all'};
+  var fmt = function(n){return n.toLocaleString('id-ID');};
+  var pct = function(n){return (n*100).toLocaleString('id-ID',{maximumFractionDigits:1})+'%';};
+
+  function monthsSel(){return state.period==='all' ? [0,1,2,3,4,5] : [Number(state.period)];}
+  function satkerSel(){return state.satker==='all' ? SATKER : [BYID[state.satker]];}
+
+  function aggregate(list, ms){
+    var t={personel:0,target:0,exam:0,nonneg:0};
+    list.forEach(function(s){
+      t.personel += s.p;
+      t.target += ms.length===6 ? s.p : Math.round(s.p/6);
+      ms.forEach(function(m){t.exam+=DATA[s.id][m].exam;t.nonneg+=DATA[s.id][m].nonneg;});
+    });
+    var ids = list.map(function(s){return s.id;});
+    t.cases = CASES.filter(function(c){return ids.indexOf(c.s)>-1 && ms.indexOf(c.m)>-1;});
+    t.conf = t.cases.length;
+    return t;
+  }
+
+  function risk(s, ms){
+    var a = aggregate([s], ms);
+    var cov = a.target ? Math.min(1, a.exam/a.target) : 0;
+    var per1000 = a.exam ? a.conf/a.exam*1000 : 0;
+    var score = Math.min(1, per1000/12)*.7 + (1-cov)*.3;
+    var lvl = score < .22 ? 'Rendah' : score < .4 ? 'Sedang' : 'Tinggi';
+    return {cov:cov, per1000:per1000, score:score, lvl:lvl, conf:a.conf, exam:a.exam};
+  }
+  var COLOR = {Rendah:'var(--low)',Sedang:'var(--mid)',Tinggi:'var(--high)'};
+
+  // ---------- controls ----------
+  var fP = document.getElementById('fPeriod'), fS = document.getElementById('fSatker');
+  fP.innerHTML = '<option value="all">April – September 2026</option>' + MONTHS.map(function(m,i){return '<option value="'+i+'">'+m+' 2026</option>';}).join('');
+  fS.innerHTML = '<option value="all">Seluruh satuan kerja</option>' + SATKER.map(function(s){return '<option value="'+s.id+'">'+s.nm+'</option>';}).join('');
+  fP.addEventListener('change', function(){state.period=fP.value;render();});
+  fS.addEventListener('change', function(){state.satker=fS.value;render();});
+  document.getElementById('reset').addEventListener('click', function(){state.period='all';state.satker='all';state.stage='all';fP.value='all';fS.value='all';render();});
+  function pickSatker(id){state.satker = state.satker===id ? 'all' : id; fS.value=state.satker; render();}
+
+  // ---------- KPI ----------
+  function renderKPI(){
+    var ms = monthsSel(), a = aggregate(satkerSel(), ms);
+    var cov = a.target ? a.exam/a.target : 0;
+    var done = a.cases.filter(function(c){return c.stage===3;}).length;
+    var items = [
+      {v:fmt(a.target), l: ms.length===6 ? 'Personel wajib periksa' : 'Target pemeriksaan bulan ini', s:fmt(a.personel)+' personel terdata'},
+      {v:fmt(a.exam), l:'Personel sudah diperiksa', s:'Cakupan '+pct(Math.min(cov,1)), m:Math.min(cov,1)},
+      {v:fmt(a.nonneg), l:'Hasil skrining non-negatif', s:(a.exam?(a.nonneg/a.exam*1000).toLocaleString('id-ID',{maximumFractionDigits:1}):0)+' per 1.000 diperiksa'},
+      {v:fmt(a.conf), l:'Terkonfirmasi laboratorium', s:(a.nonneg?pct(a.conf/a.nonneg):'0%')+' dari hasil non-negatif'},
+      {v:fmt(done), l:'Tindak lanjut tuntas', s:(a.conf?pct(done/a.conf):'0%')+' dari kasus terkonfirmasi', m:a.conf?done/a.conf:0}
+    ];
+    document.getElementById('kpis').innerHTML = items.map(function(k){
+      return '<div class="kpi"><div class="v">'+k.v+'</div><div class="l">'+k.l+'</div><div class="s">'+k.s+'</div>'+
+        (k.m!==undefined?'<div class="meter" aria-hidden="true"><i style="width:'+(k.m*100).toFixed(1)+'%"></i></div>':'')+'</div>';
+    }).join('');
+  }
+
+  // ---------- map ----------
+  function renderMap(){
+    var ms = monthsSel(), svg = document.getElementById('map');
+    var hub = BYID.mapolda, out = '';
+    // graticule (schematic)
+    [100,190,280,370].forEach(function(y,i){out+='<line class="grat" x1="0" x2="640" y1="'+y+'" y2="'+y+'"/><text class="grat-t" x="6" y="'+(y-4)+'">'+(4-i)+'°LU</text>';});
+    [160,320,480].forEach(function(x,i){out+='<line class="grat" y1="0" y2="420" x1="'+x+'" x2="'+x+'"/><text class="grat-t" x="'+(x+4)+'" y="414">'+(104+i*1.5)+'°BT</text>';});
+    SATKER.forEach(function(s){ if(s.id!=='mapolda') out+='<path class="lane" d="M'+hub.x+' '+hub.y+' Q '+((hub.x+s.x)/2+ (s.y<hub.y?-18:18))+' '+((hub.y+s.y)/2)+' '+s.x+' '+s.y+'"/>'; });
+    SATKER.forEach(function(s){
+      var r = risk(s, ms), rad = 7 + Math.sqrt(s.p)/4;
+      var sel = state.satker===s.id ? ' sel' : '';
+      out += '<g class="node'+sel+'" tabindex="0" role="button" data-id="'+s.id+'" aria-label="'+s.nm+', risiko '+r.lvl.toLowerCase()+', cakupan '+pct(r.cov)+'">'+
+        '<title>'+s.nm+' — risiko '+r.lvl.toLowerCase()+'; '+fmt(r.exam)+' diperiksa; '+r.conf+' terkonfirmasi</title>'+
+        '<circle class="ring" cx="'+s.x+'" cy="'+s.y+'" r="'+(rad+5)+'"/>'+
+        '<circle class="dot" cx="'+s.x+'" cy="'+s.y+'" r="'+rad+'" fill="'+COLOR[r.lvl]+'"/>'+
+        '<text x="'+(s.x+s.lx)+'" y="'+(s.y+s.ly-(s.a==='middle'?8:4))+'" text-anchor="'+s.a+'">'+s.sh+'</text>'+
+        '<text class="pct" x="'+(s.x+s.lx)+'" y="'+(s.y+s.ly+(s.a==='middle'?5:9))+'" text-anchor="'+s.a+'">'+pct(r.cov)+'</text>'+
+      '</g>';
+    });
+    svg.innerHTML = out;
+    svg.querySelectorAll('.node').forEach(function(g){
+      g.addEventListener('click', function(){pickSatker(g.dataset.id);});
+      g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();pickSatker(g.dataset.id);} });
+    });
+  }
+
+  // ---------- rank ----------
+  function renderRank(){
+    var ms = monthsSel();
+    var rows = SATKER.map(function(s){return {s:s, r:risk(s,ms)};}).sort(function(a,b){return b.r.score-a.r.score;});
+    document.getElementById('rank').innerHTML = rows.map(function(o){
+      return '<li class="'+(state.satker===o.s.id?'sel':'')+'"><button type="button" data-id="'+o.s.id+'">'+
+        '<span class="nm">'+o.s.nm+'</span><span class="tag t-'+o.r.lvl+'">'+o.r.lvl+'</span>'+
+        '<span class="meta">'+o.r.per1000.toLocaleString('id-ID',{maximumFractionDigits:1})+' kasus per 1.000 diperiksa &middot; cakupan '+pct(o.r.cov)+'</span>'+
+      '</button></li>';
+    }).join('');
+    document.querySelectorAll('#rank button').forEach(function(b){b.addEventListener('click',function(){pickSatker(b.dataset.id);});});
+  }
+
+  // ---------- trend ----------
+  function renderTrend(){
+    var list = satkerSel(), W=640,H=260,L=48,R=40,T=16,B=34;
+    var exam = MONTHS.map(function(_,m){return list.reduce(function(a,s){return a+DATA[s.id][m].exam;},0);});
+    var conf = MONTHS.map(function(_,m){return aggregate(list,[m]).conf;});
+    var maxE = Math.max.apply(null, exam)*1.15 || 1, maxC = Math.max(4, Math.max.apply(null, conf)*1.3);
+    var cw = (W-L-R)/6, out='';
+    for(var g=0; g<=4; g++){
+      var y = T + (H-T-B)*g/4;
+      out += '<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'"/>';
+      out += '<text class="ax" x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end">'+fmt(Math.round(maxE*(1-g/4)))+'</text>';
+      out += '<text class="ax" x="'+(W-R+8)+'" y="'+(y+4)+'">'+Math.round(maxC*(1-g/4))+'</text>';
+    }
+    var sel = state.period==='all' ? -1 : Number(state.period);
+    exam.forEach(function(v,i){
+      var h = (H-T-B)*v/maxE, x = L+i*cw+cw*.2, y = H-B-h;
+      var dim = sel>-1 && sel!==i;
+      out += '<rect x="'+x+'" y="'+y+'" width="'+(cw*.6)+'" height="'+h+'" rx="3" fill="var(--teal-soft)" stroke="var(--teal)" stroke-width="1" opacity="'+(dim?.35:1)+'"><title>'+MONTHS[i]+': '+fmt(v)+' diperiksa</title></rect>';
+      out += '<text class="ax" x="'+(L+i*cw+cw/2)+'" y="'+(H-12)+'" text-anchor="middle" style="'+(sel===i?'font-weight:700;fill:var(--ink)':'')+'">'+MSHORT[i]+'</text>';
+    });
+    var pts = conf.map(function(v,i){return [L+i*cw+cw/2, H-B-(H-T-B)*v/maxC];});
+    out += '<polyline fill="none" stroke="var(--high)" stroke-width="2.5" points="'+pts.map(function(p){return p.join(',');}).join(' ')+'"/>';
+    pts.forEach(function(p,i){out+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.5" fill="var(--surface)" stroke="var(--high)" stroke-width="2.5"><title>'+MONTHS[i]+': '+conf[i]+' terkonfirmasi</title></circle>';});
+    document.getElementById('trend').innerHTML = out;
+    document.getElementById('trendSub').textContent = (state.satker==='all'?'Seluruh satuan kerja':BYID[state.satker].nm)+'. Sumbu kiri: personel diperiksa; sumbu kanan: kasus terkonfirmasi.';
+  }
+
+  // ---------- funnel ----------
+  function renderFunnel(){
+    var a = aggregate(satkerSel(), monthsSel());
+    var steps = [
+      ['Diperiksa', a.exam],
+      ['Skrining non-negatif', a.nonneg],
+      ['Terkonfirmasi lab', a.conf],
+      ['Asesmen terpadu', a.cases.filter(function(c){return c.stage>=1;}).length],
+      ['Tindak lanjut', a.cases.filter(function(c){return c.stage>=2;}).length],
+      ['Selesai dipantau', a.cases.filter(function(c){return c.stage===3;}).length]
+    ];
+    // skala log agar tahap kecil tetap terbaca
+    var max = Math.log10(Math.max(10, a.exam)+1);
+    document.getElementById('funnel').innerHTML = steps.map(function(s){
+      var w = s[1] ? Math.max(2, Math.log10(s[1]+1)/max*100) : 0;
+      return '<div class="fstep"><span>'+s[0]+'</span><div class="fbar"><i style="width:'+w.toFixed(1)+'%"></i></div><span class="n">'+fmt(s[1])+'</span></div>';
+    }).join('') + '<div style="font-size:12px;color:var(--muted);margin-top:2px">Panjang batang memakai skala logaritmik.</div>';
+
+    var counts = ZAT.map(function(z){return [z[0], a.cases.filter(function(c){return c.zat===z[0];}).length];});
+    var mz = Math.max.apply(null, counts.map(function(c){return c[1];})) || 1;
+    document.getElementById('zat').innerHTML = a.conf ? counts.map(function(c){
+      return '<div class="zrow"><span>'+c[0]+'</span><div class="fbar"><i style="width:'+(c[1]/mz*100).toFixed(1)+'%"></i></div><b>'+c[1]+'</b></div>';
+    }).join('') : '<div style="color:var(--muted);font-size:13px">Tidak ada kasus terkonfirmasi pada pilihan ini.</div>';
+  }
+
+  // ---------- table ----------
+  function renderTable(){
+    var a = aggregate(satkerSel(), monthsSel());
+    var chipsEl = document.getElementById('chips');
+    var opts = [['all','Semua tahap']].concat(STAGES.map(function(s,i){return [String(i), s];}));
+    chipsEl.innerHTML = opts.map(function(o){
+      var n = o[0]==='all' ? a.cases.length : a.cases.filter(function(c){return String(c.stage)===o[0];}).length;
+      return '<button type="button" class="chip" data-v="'+o[0]+'" aria-pressed="'+(state.stage===o[0])+'">'+o[1]+' ('+n+')</button>';
+    }).join('');
+    chipsEl.querySelectorAll('.chip').forEach(function(b){b.addEventListener('click',function(){state.stage=b.dataset.v;renderTable();});});
+
+    var rows = a.cases.filter(function(c){return state.stage==='all' || String(c.stage)===state.stage;});
+    document.getElementById('cases').innerHTML = rows.length ? rows.map(function(c){
+      var bars=''; for(var i=0;i<4;i++) bars+='<i class="'+(i<=c.stage?'on':'')+'"></i>';
+      var label = STAGES[c.stage] + (c.stage===2 ? (c.route==='rehab'?' · rehabilitasi':' · proses Propam') : '');
+      return '<tr><td class="code">'+c.code+'</td><td>'+BYID[c.s].nm+'</td><td>'+MONTHS[c.m]+'</td><td>'+c.zat+'</td><td><span class="stage" aria-hidden="true">'+bars+'</span>'+label+'</td><td>'+c.mitra+'</td></tr>';
+    }).join('') : '<tr><td colspan="6" class="empty">Tidak ada kasus pada tahap ini. Ubah periode, satuan kerja, atau tahap untuk melihat kasus lain.</td></tr>';
+  }
+
+  // ---------- partners ----------
+  function renderPartners(){
+    var a = aggregate(satkerSel(), monthsSel()), c = a.cases;
+    var P = [
+      {n:'BNNP Kepulauan Riau', r:'Asesmen terpadu dan rehabilitasi', st:'Nota kesepahaman', v:c.filter(function(x){return x.stage>=1;}).length, u:'kasus dirujuk'},
+      {n:'RS Bhayangkara Polda Kepri', r:'Uji konfirmasi laboratorium', st:'Nota kesepahaman', v:a.conf, u:'sampel dikonfirmasi'},
+      {n:'RS rujukan daerah', r:'Layanan rehabilitasi medis', st:'Perjanjian kerja sama', v:c.filter(function(x){return x.stage>=2 && x.route==='rehab';}).length, u:'personel direhabilitasi'},
+      {n:'Bidpropam Polda Kepri', r:'Pembinaan dan penegakan disiplin', st:'Koordinasi internal', v:c.filter(function(x){return x.stage>=2 && x.route==='propam';}).length, u:'kasus diteruskan'},
+      {n:'Forum Kolaborasi SIPANTAS', r:'Rapat koordinasi bulanan lintas mitra', st:'Aktif', v:monthsSel().length, u:'rapat terlaksana'}
+    ];
+    document.getElementById('partners').innerHTML = P.map(function(p){
+      return '<li><span class="pn">'+p.n+'<span class="status">'+p.st+'</span></span><span class="pr">'+p.r+'</span><span class="pc"><b>'+fmt(p.v)+'</b><small>'+p.u+'</small></span></li>';
+    }).join('');
+  }
+
+  function render(){renderKPI();renderMap();renderRank();renderTrend();renderFunnel();renderTable();renderPartners();}
+  render();
+})();
+</script>
+</body>
+</html>
